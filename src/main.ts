@@ -1,5 +1,5 @@
-import * as core from '@actions/core'
-import { wait } from './wait'
+import {writeFile} from 'fs'
+import { exec } from 'child_process';
 
 /**
  * The main function for the action.
@@ -7,20 +7,65 @@ import { wait } from './wait'
  */
 export async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
+    const diff = await execPromise('git diff --name-only main...HEAD');
+    const folderChanges = diff.split("\n");
+    for (const folderChange of folderChanges) {
+      console.log(folderChange)
+    }
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds`)
+    const terraformConfig: string = ` 
+      terraform {
+        backend "s3" {
+          bucket  = "allaria-development-tf-remote-state"
+          key     = "us-east-1/lambda/functions/holidays/terraform.tfstate"
+          region  = "us-east-1"
+          profile = "development"
+        }
+      }
+            
+      provider "aws" {
+         region  = "us-east-1"
+         profile = "development"
+            
+         default_tags {
+            tags = {
+              ManagedBy    = "terraform"
+              Environment  = "development"
+              Dir          = "us-east-1/lambdas/functions/holidays"
+            }
+          }
+      }`;
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const filename: string = 'config.tf';
+    writeFile(filename, terraformConfig, (err: NodeJS.ErrnoException | null) => {
+      if (err) {
+        console.error('Error writing the Terraform configuration file:', err);
+      } else {
+        console.log('Terraform configuration file created successfully.');
+      }
+    });
 
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
+
   } catch (error) {
     // Fail the workflow run if an error occurs
-    if (error instanceof Error) core.setFailed(error.message)
+    if (error instanceof Error) console.log("error",error)
   }
 }
+
+const execPromise = (cmd: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    exec(cmd, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      if (stderr) {
+        reject(stderr);
+        return;
+      }
+      resolve(stdout);
+    });
+  });
+};
+
+run()
