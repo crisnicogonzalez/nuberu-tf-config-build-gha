@@ -1,6 +1,6 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'terraform-config-builder'
+description: 'Action to generate terraform config file with provider and state config'
+author: 'nuberu'
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
