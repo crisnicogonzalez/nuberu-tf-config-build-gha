@@ -7,10 +7,13 @@ import { exec } from 'child_process';
  */
 export async function run(): Promise<void> {
   try {
-    const diff = await execPromise('git diff main...HEAD');
-    console.log(diff);
+    const diff = await execPromise('git diff --name-only main...HEAD');
+    const folderChanges = diff.split("\n");
+    for (const folderChange of folderChanges) {
+      console.log(folderChange)
+    }
 
-      const terraformConfig: string = ` 
+    const terraformConfig: string = ` 
       terraform {
         backend "s3" {
           bucket  = "allaria-development-tf-remote-state"
@@ -45,7 +48,7 @@ export async function run(): Promise<void> {
 
   } catch (error) {
     // Fail the workflow run if an error occurs
-    if (error instanceof Error) console.log("pepe")
+    if (error instanceof Error) console.log("error",error)
   }
 }
 

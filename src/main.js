@@ -45,15 +45,19 @@ var child_process_1 = require("child_process");
  */
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var diff, terraformConfig, filename, error_1;
+        var diff, folderChanges, _i, folderChanges_1, folderChange, terraformConfig, filename, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, execPromise('git diff main...HEAD')];
+                    return [4 /*yield*/, execPromise('git diff --name-only main...HEAD')];
                 case 1:
                     diff = _a.sent();
-                    console.log(diff);
+                    folderChanges = diff.split("\n");
+                    for (_i = 0, folderChanges_1 = folderChanges; _i < folderChanges_1.length; _i++) {
+                        folderChange = folderChanges_1[_i];
+                        console.log(folderChange);
+                    }
                     terraformConfig = " \n      terraform {\n        backend \"s3\" {\n          bucket  = \"allaria-development-tf-remote-state\"\n          key     = \"us-east-1/lambda/functions/holidays/terraform.tfstate\"\n          region  = \"us-east-1\"\n          profile = \"development\"\n        }\n      }\n            \n      provider \"aws\" {\n         region  = \"us-east-1\"\n         profile = \"development\"\n            \n         default_tags {\n            tags = {\n              ManagedBy    = \"terraform\"\n              Environment  = \"development\"\n              Dir          = \"us-east-1/lambdas/functions/holidays\"\n            }\n          }\n      }";
                     filename = 'config.tf';
                     (0, fs_1.writeFile)(filename, terraformConfig, function (err) {
@@ -69,7 +73,7 @@ function run() {
                     error_1 = _a.sent();
                     // Fail the workflow run if an error occurs
                     if (error_1 instanceof Error)
-                        console.log("pepe");
+                        console.log("error", error_1);
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }
