@@ -24986,7 +24986,7 @@ async function run() {
       terraform {
         backend "s3" {
           bucket  = "allaria-development-tf-remote-state"
-          key     = ${folderChanges[0]}
+          key     = "${folderChanges[0]}"
           region  = "us-east-1"
           profile = "development"
         }
@@ -25000,7 +25000,7 @@ async function run() {
             tags = {
               ManagedBy    = "terraform"
               Environment  = "development"
-              Dir          = ${folderChanges[0]}
+              Dir          = "${folderChanges[0]}"
             }
           }
       }`;

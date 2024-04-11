@@ -54,6 +54,9 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
+      - name: List all local and remote branches
+        run: git branch -a
+
       - name: Test Local Action
         id: test-action
         uses: ./
