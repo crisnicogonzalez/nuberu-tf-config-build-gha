@@ -13,6 +13,11 @@ export async function run(): Promise<void> {
       console.log(folderChange)
     }
 
+    if (folderChanges.length !== 1){
+      return Promise.reject("there is changes on more than one folder")
+    }
+
+
     const terraformConfig: string = ` 
       terraform {
         backend "s3" {
