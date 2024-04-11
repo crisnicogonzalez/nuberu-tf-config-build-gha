@@ -7,12 +7,8 @@ import { exec } from 'child_process'
  */
 export async function run(): Promise<void> {
   try {
-    const diff = await execPromise('git diff --name-only main...HEAD')
+    const diff = await execPromise('git diff --name-only origin/main...HEAD')
     const folderChanges = diff.split('\n')
-    if (folderChanges.length !== 1) {
-      return Promise.reject('there is changes on more than one folder')
-    }
-
     const terraformConfig: string = ` 
       terraform {
         backend "s3" {
