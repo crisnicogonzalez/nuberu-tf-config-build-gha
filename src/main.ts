@@ -9,14 +9,9 @@ export async function run(): Promise<void> {
   try {
     const diff = await execPromise('git diff --name-only main...HEAD');
     const folderChanges = diff.split("\n");
-    for (const folderChange of folderChanges) {
-      console.log(folderChange)
-    }
-
     if (folderChanges.length !== 1){
       return Promise.reject("there is changes on more than one folder")
     }
-
 
     const terraformConfig: string =` 
       terraform {
@@ -49,7 +44,6 @@ export async function run(): Promise<void> {
         console.log('Terraform configuration file created successfully.');
       }
     });
-
 
   } catch (error) {
     // Fail the workflow run if an error occurs
