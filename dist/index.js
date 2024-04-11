@@ -24980,11 +24980,8 @@ const child_process_1 = __nccwpck_require__(2081);
  */
 async function run() {
     try {
-        const diff = await execPromise('git diff --name-only main...HEAD');
+        const diff = await execPromise('git diff --name-only origin/main...HEAD');
         const folderChanges = diff.split('\n');
-        if (folderChanges.length !== 1) {
-            return Promise.reject('there is changes on more than one folder');
-        }
         const terraformConfig = ` 
       terraform {
         backend "s3" {
