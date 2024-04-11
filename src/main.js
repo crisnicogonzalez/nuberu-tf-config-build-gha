@@ -58,6 +58,9 @@ function run() {
                         folderChange = folderChanges_1[_i];
                         console.log(folderChange);
                     }
+                    if (folderChanges.length !== 1) {
+                        return [2 /*return*/, Promise.reject("there is changes on more than one folder")];
+                    }
                     terraformConfig = " \n      terraform {\n        backend \"s3\" {\n          bucket  = \"allaria-development-tf-remote-state\"\n          key     = \"us-east-1/lambda/functions/holidays/terraform.tfstate\"\n          region  = \"us-east-1\"\n          profile = \"development\"\n        }\n      }\n            \n      provider \"aws\" {\n         region  = \"us-east-1\"\n         profile = \"development\"\n            \n         default_tags {\n            tags = {\n              ManagedBy    = \"terraform\"\n              Environment  = \"development\"\n              Dir          = \"us-east-1/lambdas/functions/holidays\"\n            }\n          }\n      }";
                     filename = 'config.tf';
                     (0, fs_1.writeFile)(filename, terraformConfig, function (err) {
