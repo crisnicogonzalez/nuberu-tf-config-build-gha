@@ -9,15 +9,15 @@ export async function run(): Promise<void> {
   try {
     const diff = await execPromise('git diff --name-only main...HEAD');
     const folderChanges = diff.split("\n");
-    for (const folderChange of folderChanges) {
-      console.log(folderChange)
+    if (folderChanges.length !== 1){
+      return Promise.reject("there is changes on more than one folder")
     }
 
-    const terraformConfig: string = ` 
+    const terraformConfig: string =` 
       terraform {
         backend "s3" {
           bucket  = "allaria-development-tf-remote-state"
-          key     = "us-east-1/lambda/functions/holidays/terraform.tfstate"
+          key     = ${folderChanges[0]}
           region  = "us-east-1"
           profile = "development"
         }
@@ -31,7 +31,7 @@ export async function run(): Promise<void> {
             tags = {
               ManagedBy    = "terraform"
               Environment  = "development"
-              Dir          = "us-east-1/lambdas/functions/holidays"
+              Dir          = ${folderChanges[0]}
             }
           }
       }`;
@@ -44,7 +44,6 @@ export async function run(): Promise<void> {
         console.log('Terraform configuration file created successfully.');
       }
     });
-
 
   } catch (error) {
     // Fail the workflow run if an error occurs
