@@ -25004,6 +25004,7 @@ async function run() {
             }
           }
       }`;
+        console.log(terraformConfig);
         const filename = 'config.tf';
         (0, fs_1.writeFile)(filename, terraformConfig, (err) => {
             if (err) {

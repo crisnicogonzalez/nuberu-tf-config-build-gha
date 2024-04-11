@@ -34,6 +34,8 @@ export async function run(): Promise<void> {
           }
       }`
 
+    console.log(terraformConfig)
+
     const filename: string = 'config.tf'
     writeFile(
       filename,
