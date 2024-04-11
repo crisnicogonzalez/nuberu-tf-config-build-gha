@@ -1,5 +1,6 @@
 name: 'terraform-config-builder'
-description: 'Action to generate terraform config file with provider and state config'
+description:
+  'Action to generate terraform config file with provider and state config'
 author: 'nuberu'
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
