@@ -7,7 +7,7 @@ import { exec } from 'child_process'
  */
 export async function run(): Promise<void> {
   try {
-    const diff = await execPromise('git diff --name-only origin/main...HEAD')
+    const diff = await execPromise('git diff --name-only main...HEAD')
     const folderChanges = diff.split('\n')
     const terraformConfig: string = ` 
       terraform {
