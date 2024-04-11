@@ -2,7 +2,7 @@
       terraform {
         backend "s3" {
           bucket  = "allaria-development-tf-remote-state"
-          key     = "us-east-1/lambda/functions/holidays/terraform.tfstate"
+          key     = ".github/workflows/ci.yml"
           region  = "us-east-1"
           profile = "development"
         }
@@ -16,7 +16,7 @@
             tags = {
               ManagedBy    = "terraform"
               Environment  = "development"
-              Dir          = "us-east-1/lambdas/functions/holidays"
+              Dir          = ".github/workflows/ci.yml"
             }
           }
       }

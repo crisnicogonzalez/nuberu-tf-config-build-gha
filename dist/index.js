@@ -24920,7 +24920,7 @@ exports["default"] = _default;
 
 /***/ }),
 
-/***/ 399:
+/***/ 6144:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -24949,57 +24949,95 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.run = void 0;
+/**
+ * The entrypoint for the action.
+ */
+const main_1 = __nccwpck_require__(399);
 const core = __importStar(__nccwpck_require__(2186));
-const wait_1 = __nccwpck_require__(5259);
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
+function main() {
+    (0, main_1.run)().catch(error => {
+        core.setFailed(error);
+    });
+}
+main();
+
+
+/***/ }),
+
+/***/ 399:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.run = void 0;
+const fs_1 = __nccwpck_require__(7147);
+const child_process_1 = __nccwpck_require__(2081);
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
     try {
-        const ms = core.getInput('milliseconds');
-        // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-        core.debug(`Waiting ${ms} milliseconds ...`);
-        // Log the current timestamp, wait, then log the new timestamp
-        core.debug(new Date().toTimeString());
-        await (0, wait_1.wait)(parseInt(ms, 10));
-        core.debug(new Date().toTimeString());
-        // Set outputs for other workflow steps to use
-        core.setOutput('time', new Date().toTimeString());
+        const diff = await execPromise('git diff --name-only remotes/origin/main...HEAD');
+        const folderChanges = diff.split('\n');
+        const terraformConfig = ` 
+      terraform {
+        backend "s3" {
+          bucket  = "allaria-development-tf-remote-state"
+          key     = "${folderChanges[0]}"
+          region  = "us-east-1"
+          profile = "development"
+        }
+      }
+            
+      provider "aws" {
+         region  = "us-east-1"
+         profile = "development"
+            
+         default_tags {
+            tags = {
+              ManagedBy    = "terraform"
+              Environment  = "development"
+              Dir          = "${folderChanges[0]}"
+            }
+          }
+      }`;
+        console.log(terraformConfig);
+        const filename = 'config.tf';
+        (0, fs_1.writeFile)(filename, terraformConfig, (err) => {
+            if (err) {
+                console.error('Error writing the Terraform configuration file:', err);
+            }
+            else {
+                console.log('Terraform configuration file created successfully.');
+            }
+        });
     }
     catch (error) {
         // Fail the workflow run if an error occurs
         if (error instanceof Error)
-            core.setFailed(error.message);
+            console.log('error', error);
     }
 }
 exports.run = run;
-
-
-/***/ }),
-
-/***/ 5259:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.wait = void 0;
-/**
- * Wait for a number of milliseconds.
- * @param milliseconds The number of milliseconds to wait.
- * @returns {Promise<string>} Resolves with 'done!' after the wait is over.
- */
-async function wait(milliseconds) {
-    return new Promise(resolve => {
-        if (isNaN(milliseconds)) {
-            throw new Error('milliseconds not a number');
-        }
-        setTimeout(() => resolve('done!'), milliseconds);
+const execPromise = (cmd) => {
+    return new Promise((resolve, reject) => {
+        (0, child_process_1.exec)(cmd, (error, stdout, stderr) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            if (stderr) {
+                reject(stderr);
+                return;
+            }
+            resolve(stdout);
+        });
     });
-}
-exports.wait = wait;
+};
+run();
 
 
 /***/ }),
@@ -25025,6 +25063,14 @@ module.exports = require("async_hooks");
 
 "use strict";
 module.exports = require("buffer");
+
+/***/ }),
+
+/***/ 2081:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");
 
 /***/ }),
 
@@ -26891,23 +26937,13 @@ module.exports = parseParams
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-var exports = __webpack_exports__;
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-/**
- * The entrypoint for the action.
- */
-const main_1 = __nccwpck_require__(399);
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
-(0, main_1.run)();
-
-})();
-
-module.exports = __webpack_exports__;
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require__(6144);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map

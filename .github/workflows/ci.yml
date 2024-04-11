@@ -52,6 +52,11 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all branches and tags
+
+      - name: List all local and remote branches
+        run: git branch -a
 
       - name: Test Local Action
         id: test-action
