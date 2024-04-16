@@ -20,6 +20,8 @@ export async function run(mode: string): Promise<void> {
     const filteredChangedFolder = folderChanges.filter(f =>
       f.includes('.github')
     )
+
+    if (filteredChangedFolder.length == 0) return
     const terraformConfig: string = ` 
       terraform {
         backend "s3" {
