@@ -10,11 +10,12 @@ branding:
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  mode:
+    description: 'How compare with main branch'
     required: true
-    default: '1000'
-
+  organization:
+    description: 'Company name'
+    required: true
 # Define your outputs here.
 outputs:
   time:

@@ -25,7 +25,7 @@ export async function run(mode: string, organization: string): Promise<void> {
     const terraformConfig: string = ` 
       terraform {
         backend "s3" {
-          bucket  = "allaria-${organization}-tf-remote-state"
+          bucket  = "${organization}-development-tf-remote-state"
           key     = "${filteredChangedFolder[0]}"
           region  = "us-east-1"
           profile = "development"

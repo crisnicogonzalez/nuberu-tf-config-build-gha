@@ -25000,7 +25000,7 @@ async function run(mode, organization) {
         const terraformConfig = ` 
       terraform {
         backend "s3" {
-          bucket  = "allaria-${organization}-tf-remote-state"
+          bucket  = "${organization}-development-tf-remote-state"
           key     = "${filteredChangedFolder[0]}"
           region  = "us-east-1"
           profile = "development"
