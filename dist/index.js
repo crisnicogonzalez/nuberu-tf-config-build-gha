@@ -24979,6 +24979,7 @@ const child_process_1 = __nccwpck_require__(2081);
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
+    console.log('RUNNNING');
     try {
         const diff = await execPromise('git diff --name-only remotes/origin/main...HEAD');
         const folderChanges = diff.split('\n');
