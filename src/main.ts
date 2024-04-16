@@ -17,11 +17,14 @@ export async function run(mode: string): Promise<void> {
     const diff = await execPromise(gitCommand)
     const folderChanges = diff.split('\n')
     console.log('folder changes', folderChanges)
+    const filteredChangedFolder = folderChanges.filter(f =>
+      f.includes('.github')
+    )
     const terraformConfig: string = ` 
       terraform {
         backend "s3" {
           bucket  = "allaria-development-tf-remote-state"
-          key     = "${folderChanges[0]}"
+          key     = "${filteredChangedFolder[0]}"
           region  = "us-east-1"
           profile = "development"
         }
@@ -35,7 +38,7 @@ export async function run(mode: string): Promise<void> {
             tags = {
               ManagedBy    = "terraform"
               Environment  = "development"
-              Dir          = "${folderChanges[0]}"
+              Dir          = "${filteredChangedFolder[0]}"
             }
           }
       }`
