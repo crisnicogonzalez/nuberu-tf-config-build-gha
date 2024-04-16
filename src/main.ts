@@ -5,7 +5,7 @@ import { exec } from 'child_process'
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
-export async function run(mode: string): Promise<void> {
+export async function run(mode: string, organization: string): Promise<void> {
   if (mode != 'plan' && mode != 'apply') throw new Error('invalid mode')
   try {
     let gitCommand
@@ -25,7 +25,7 @@ export async function run(mode: string): Promise<void> {
     const terraformConfig: string = ` 
       terraform {
         backend "s3" {
-          bucket  = "allaria-development-tf-remote-state"
+          bucket  = "allaria-${organization}-tf-remote-state"
           key     = "${filteredChangedFolder[0]}"
           region  = "us-east-1"
           profile = "development"
