@@ -6,7 +6,6 @@ import { exec } from 'child_process'
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 export async function run(): Promise<void> {
-  console.log('RUNNNING')
   try {
     const diff = await execPromise(
       'git diff --name-only remotes/origin/main...HEAD'
