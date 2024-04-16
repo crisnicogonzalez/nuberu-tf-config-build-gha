@@ -24956,7 +24956,8 @@ const main_1 = __nccwpck_require__(399);
 const core = __importStar(__nccwpck_require__(2186));
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 function main() {
-    (0, main_1.run)().catch(error => {
+    const ms = core.getInput('mode');
+    (0, main_1.run)(ms).catch(error => {
         core.setFailed(error);
     });
 }
@@ -24978,11 +24979,20 @@ const child_process_1 = __nccwpck_require__(2081);
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
-async function run() {
-    console.log('RUNNNING');
+async function run(mode) {
+    if (mode != 'plan' && mode != 'apply')
+        throw new Error('invalid mode');
     try {
-        const diff = await execPromise('git diff --name-only remotes/origin/main...HEAD');
+        let gitCommand;
+        if (mode == 'plan') {
+            gitCommand = 'git diff --name-only remotes/origin/main...HEAD';
+        }
+        else {
+            gitCommand = 'git diff --name-only HEAD~1 HEAD';
+        }
+        const diff = await execPromise(gitCommand);
         const folderChanges = diff.split('\n');
+        console.log('folder changes', folderChanges);
         const terraformConfig = ` 
       terraform {
         backend "s3" {
@@ -25005,7 +25015,7 @@ async function run() {
             }
           }
       }`;
-        console.log(terraformConfig);
+        console.log('generated file', terraformConfig);
         const filename = 'config.tf';
         (0, fs_1.writeFile)(filename, terraformConfig, (err) => {
             if (err) {
@@ -25038,7 +25048,6 @@ const execPromise = (cmd) => {
         });
     });
 };
-run();
 
 
 /***/ }),

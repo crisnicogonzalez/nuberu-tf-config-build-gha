@@ -6,17 +6,17 @@ import { exec } from 'child_process'
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 export async function run(mode: string): Promise<void> {
-  if (mode != "plan" && mode != "apply") throw new Error("invalid mode")
+  if (mode != 'plan' && mode != 'apply') throw new Error('invalid mode')
   try {
-    let gitCommand;
-    if (mode == "plan"){
-      gitCommand  = "git diff --name-only remotes/origin/main...HEAD"
+    let gitCommand
+    if (mode == 'plan') {
+      gitCommand = 'git diff --name-only remotes/origin/main...HEAD'
     } else {
-      gitCommand = "git diff --name-only HEAD~1 HEAD"
+      gitCommand = 'git diff --name-only HEAD~1 HEAD'
     }
     const diff = await execPromise(gitCommand)
     const folderChanges = diff.split('\n')
-    console.log("folder changes", folderChanges)
+    console.log('folder changes', folderChanges)
     const terraformConfig: string = ` 
       terraform {
         backend "s3" {
@@ -40,7 +40,7 @@ export async function run(mode: string): Promise<void> {
           }
       }`
 
-    console.log("generated file", terraformConfig)
+    console.log('generated file', terraformConfig)
 
     const filename: string = 'config.tf'
     writeFile(
@@ -75,5 +75,3 @@ const execPromise = (cmd: string): Promise<string> => {
     })
   })
 }
-
-run()
