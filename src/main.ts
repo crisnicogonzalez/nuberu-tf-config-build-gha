@@ -11,6 +11,7 @@ export async function run(): Promise<void> {
       'git diff --name-only remotes/origin/main...HEAD'
     )
     const folderChanges = diff.split('\n')
+    console.log("folder changes", folderChanges)
     const terraformConfig: string = ` 
       terraform {
         backend "s3" {
