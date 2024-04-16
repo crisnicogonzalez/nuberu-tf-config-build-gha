@@ -24956,8 +24956,9 @@ const main_1 = __nccwpck_require__(399);
 const core = __importStar(__nccwpck_require__(2186));
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 function main() {
-    const ms = core.getInput('mode');
-    (0, main_1.run)(ms).catch(error => {
+    const mode = core.getInput('mode');
+    const organization = core.getInput('organization');
+    (0, main_1.run)(mode, organization).catch(error => {
         core.setFailed(error);
     });
 }
@@ -24979,7 +24980,7 @@ const child_process_1 = __nccwpck_require__(2081);
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
-async function run(mode) {
+async function run(mode, organization) {
     if (mode != 'plan' && mode != 'apply')
         throw new Error('invalid mode');
     try {
@@ -24994,10 +24995,12 @@ async function run(mode) {
         const folderChanges = diff.split('\n');
         console.log('folder changes', folderChanges);
         const filteredChangedFolder = folderChanges.filter(f => f.includes('.github'));
+        if (filteredChangedFolder.length == 0)
+            return;
         const terraformConfig = ` 
       terraform {
         backend "s3" {
-          bucket  = "allaria-development-tf-remote-state"
+          bucket  = "allaria-${organization}-tf-remote-state"
           key     = "${filteredChangedFolder[0]}"
           region  = "us-east-1"
           profile = "development"

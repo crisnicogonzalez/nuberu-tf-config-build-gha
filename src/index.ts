@@ -8,7 +8,7 @@ import * as core from '@actions/core'
 
 function main() {
   const mode: string = core.getInput('mode')
-  const organization: string = core.getInput("organization")
+  const organization: string = core.getInput('organization')
   run(mode, organization).catch(error => {
     core.setFailed(error)
   })
