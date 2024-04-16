@@ -5,11 +5,16 @@ import { exec } from 'child_process'
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
-export async function run(): Promise<void> {
+export async function run(mode: string): Promise<void> {
+  if (mode != "plan" && mode != "apply") throw new Error("invalid mode")
   try {
-    const diff = await execPromise(
-      'git diff --name-only remotes/origin/main...HEAD'
-    )
+    let gitCommand;
+    if (mode == "plan"){
+      gitCommand  = "git diff --name-only remotes/origin/main...HEAD"
+    } else {
+      gitCommand = "git diff --name-only HEAD~1 HEAD"
+    }
+    const diff = await execPromise(gitCommand)
     const folderChanges = diff.split('\n')
     console.log("folder changes", folderChanges)
     const terraformConfig: string = ` 
