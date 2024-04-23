@@ -24994,7 +24994,7 @@ async function run(mode, organization) {
         const diff = await execPromise(gitCommand);
         const folderChanges = diff.split('\n');
         console.log('folder changes', folderChanges);
-        const filteredChangedFolder = folderChanges.filter(f => f.includes('.github'));
+        const filteredChangedFolder = folderChanges.filter(f => !f.includes('.github'));
         if (filteredChangedFolder.length == 0)
             return;
         const terraformConfig = ` 
