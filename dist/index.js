@@ -24959,8 +24959,12 @@ function main() {
     const mode = core.getInput('mode');
     const organization = core.getInput('organization');
     const environment = core.getInput('environment');
-    (0, main_1.run)(mode, organization, environment).catch(error => {
+    (0, main_1.run)(mode, organization, environment)
+        .catch(error => {
         core.setFailed(error);
+    })
+        .then(workDir => {
+        core.setOutput('work_dir', workDir);
     });
 }
 main();
@@ -24997,8 +25001,8 @@ async function run(mode, organization, environment) {
         console.log('folder changes', folderChanges);
         const filteredChangedFolder = folderChanges.filter(f => !f.includes('.github') || f !== '');
         if (filteredChangedFolder.length === 0)
-            return;
-        const terraformConfig = ` 
+            return '';
+        const fileContent = ` 
       terraform {
         backend "s3" {
           bucket  = "${organization}-${environment}-tf-remote-state"
@@ -25020,21 +25024,15 @@ async function run(mode, organization, environment) {
             }
           }
       }`;
-        console.log('generated file', terraformConfig);
-        const filename = 'config.tf';
-        (0, fs_1.writeFile)(filename, terraformConfig, (err) => {
-            if (err) {
-                console.error('Error writing the Terraform configuration file:', err);
-            }
-            else {
-                console.log('Terraform configuration file created successfully.');
-            }
-        });
+        console.log('generated file', fileContent);
+        await writeFileAsync('config.tf', fileContent);
+        return filteredChangedFolder[0];
     }
     catch (error) {
         // Fail the workflow run if an error occurs
         if (error instanceof Error)
             console.log('error', error);
+        throw new Error('error');
     }
 }
 exports.run = run;
@@ -25053,6 +25051,15 @@ const execPromise = (cmd) => {
         });
     });
 };
+async function writeFileAsync(path, data) {
+    try {
+        await fs_1.promises.writeFile(path, data);
+        console.log('File written successfully');
+    }
+    catch (error) {
+        console.error('Failed to write file:', error);
+    }
+}
 
 
 /***/ }),

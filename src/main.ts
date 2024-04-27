@@ -1,4 +1,4 @@
-import { writeFile } from 'fs'
+import { promises as fs } from 'fs'
 import { exec } from 'child_process'
 
 /**
@@ -9,7 +9,7 @@ export async function run(
   mode: string,
   organization: string,
   environment: string
-): Promise<void> {
+): Promise<string> {
   if (mode !== 'plan' && mode !== 'apply') throw new Error('invalid mode')
   try {
     let gitCommand
@@ -25,8 +25,8 @@ export async function run(
       f => !f.includes('.github') || f !== ''
     )
 
-    if (filteredChangedFolder.length === 0) return
-    const terraformConfig: string = ` 
+    if (filteredChangedFolder.length === 0) return ''
+    const fileContent: string = ` 
       terraform {
         backend "s3" {
           bucket  = "${organization}-${environment}-tf-remote-state"
@@ -49,23 +49,14 @@ export async function run(
           }
       }`
 
-    console.log('generated file', terraformConfig)
+    console.log('generated file', fileContent)
 
-    const filename: string = 'config.tf'
-    writeFile(
-      filename,
-      terraformConfig,
-      (err: NodeJS.ErrnoException | null) => {
-        if (err) {
-          console.error('Error writing the Terraform configuration file:', err)
-        } else {
-          console.log('Terraform configuration file created successfully.')
-        }
-      }
-    )
+    await writeFileAsync('config.tf', fileContent)
+    return filteredChangedFolder[0]
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) console.log('error', error)
+    throw new Error('error')
   }
 }
 
@@ -83,4 +74,13 @@ const execPromise = (cmd: string): Promise<string> => {
       resolve(stdout)
     })
   })
+}
+
+async function writeFileAsync(path: string, data: string): Promise<void> {
+  try {
+    await fs.writeFile(path, data)
+    console.log('File written successfully')
+  } catch (error) {
+    console.error('Failed to write file:', error)
+  }
 }

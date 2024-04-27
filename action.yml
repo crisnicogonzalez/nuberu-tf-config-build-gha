@@ -19,10 +19,10 @@ inputs:
   environment:
     description: 'environment where the changes are applied'
     required: true
-# Define your outputs here.
+
 outputs:
-  time:
-    description: 'Your output description here'
+  work_dir:
+    description: 'working directory where the changes will be applied'
 
 runs:
   using: node20
