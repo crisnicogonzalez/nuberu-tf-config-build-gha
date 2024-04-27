@@ -10,7 +10,7 @@ export async function run(
   organization: string,
   environment: string
 ): Promise<void> {
-  if (mode != 'plan' && mode != 'apply') throw new Error('invalid mode')
+  if (mode !== 'plan' && mode !== 'apply') throw new Error('invalid mode')
   try {
     let gitCommand
     if (mode == 'plan') {
@@ -22,10 +22,10 @@ export async function run(
     const folderChanges = diff.split('\n')
     console.log('folder changes', folderChanges)
     const filteredChangedFolder = folderChanges.filter(
-      f => !f.includes('.github') || f != ''
+      f => !f.includes('.github') || f !== ''
     )
 
-    if (filteredChangedFolder.length == 0) return
+    if (filteredChangedFolder.length === 0) return
     const terraformConfig: string = ` 
       terraform {
         backend "s3" {

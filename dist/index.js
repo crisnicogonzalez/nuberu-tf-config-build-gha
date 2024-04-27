@@ -24982,7 +24982,7 @@ const child_process_1 = __nccwpck_require__(2081);
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run(mode, organization, environment) {
-    if (mode != 'plan' && mode != 'apply')
+    if (mode !== 'plan' && mode !== 'apply')
         throw new Error('invalid mode');
     try {
         let gitCommand;
@@ -24995,8 +24995,8 @@ async function run(mode, organization, environment) {
         const diff = await execPromise(gitCommand);
         const folderChanges = diff.split('\n');
         console.log('folder changes', folderChanges);
-        const filteredChangedFolder = folderChanges.filter(f => !f.includes('.github') || f != '');
-        if (filteredChangedFolder.length == 0)
+        const filteredChangedFolder = folderChanges.filter(f => !f.includes('.github') || f !== '');
+        if (filteredChangedFolder.length === 0)
             return;
         const terraformConfig = ` 
       terraform {
