@@ -9,7 +9,8 @@ import * as core from '@actions/core'
 function main() {
   const mode: string = core.getInput('mode')
   const organization: string = core.getInput('organization')
-  run(mode, organization).catch(error => {
+  const environment: string = core.getInput('environment')
+  run(mode, organization, environment).catch(error => {
     core.setFailed(error)
   })
 }

@@ -24958,7 +24958,8 @@ const core = __importStar(__nccwpck_require__(2186));
 function main() {
     const mode = core.getInput('mode');
     const organization = core.getInput('organization');
-    (0, main_1.run)(mode, organization).catch(error => {
+    const environment = core.getInput('environment');
+    (0, main_1.run)(mode, organization, environment).catch(error => {
         core.setFailed(error);
     });
 }
@@ -24980,7 +24981,7 @@ const child_process_1 = __nccwpck_require__(2081);
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
-async function run(mode, organization) {
+async function run(mode, organization, environment) {
     if (mode != 'plan' && mode != 'apply')
         throw new Error('invalid mode');
     try {
@@ -24994,27 +24995,27 @@ async function run(mode, organization) {
         const diff = await execPromise(gitCommand);
         const folderChanges = diff.split('\n');
         console.log('folder changes', folderChanges);
-        const filteredChangedFolder = folderChanges.filter(f => !f.includes('.github'));
+        const filteredChangedFolder = folderChanges.filter(f => !f.includes('.github') || f != '');
         if (filteredChangedFolder.length == 0)
             return;
         const terraformConfig = ` 
       terraform {
         backend "s3" {
-          bucket  = "${organization}-development-tf-remote-state"
+          bucket  = "${organization}-${environment}-tf-remote-state"
           key     = "${filteredChangedFolder[0]}"
           region  = "us-east-1"
-          profile = "development"
+          profile = "default"
         }
       }
             
       provider "aws" {
          region  = "us-east-1"
-         profile = "development"
+         profile = "default"
             
          default_tags {
             tags = {
               ManagedBy    = "terraform"
-              Environment  = "development"
+              Environment  = "${environment}"
               Dir          = "${filteredChangedFolder[0]}"
             }
           }

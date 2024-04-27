@@ -5,7 +5,11 @@ import { exec } from 'child_process'
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
-export async function run(mode: string, organization: string): Promise<void> {
+export async function run(
+  mode: string,
+  organization: string,
+  environment: string
+): Promise<void> {
   if (mode != 'plan' && mode != 'apply') throw new Error('invalid mode')
   try {
     let gitCommand
@@ -18,28 +22,28 @@ export async function run(mode: string, organization: string): Promise<void> {
     const folderChanges = diff.split('\n')
     console.log('folder changes', folderChanges)
     const filteredChangedFolder = folderChanges.filter(
-      f => !f.includes('.github')
+      f => !f.includes('.github') || f != ''
     )
 
     if (filteredChangedFolder.length == 0) return
     const terraformConfig: string = ` 
       terraform {
         backend "s3" {
-          bucket  = "${organization}-development-tf-remote-state"
+          bucket  = "${organization}-${environment}-tf-remote-state"
           key     = "${filteredChangedFolder[0]}"
           region  = "us-east-1"
-          profile = "development"
+          profile = "default"
         }
       }
             
       provider "aws" {
          region  = "us-east-1"
-         profile = "development"
+         profile = "default"
             
          default_tags {
             tags = {
               ManagedBy    = "terraform"
-              Environment  = "development"
+              Environment  = "${environment}"
               Dir          = "${filteredChangedFolder[0]}"
             }
           }

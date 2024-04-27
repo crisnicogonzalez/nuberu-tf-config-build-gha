@@ -16,6 +16,9 @@ inputs:
   organization:
     description: 'Company name'
     required: true
+  environment:
+    description: 'environment where the changes are applied'
+    required: true
 # Define your outputs here.
 outputs:
   time:
