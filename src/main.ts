@@ -22,7 +22,7 @@ export async function run(
     const folderChanges = diff.split('\n')
     console.log('folder changes', folderChanges)
     const filteredChangedFolder = folderChanges.filter(
-      f => !f.includes('.github') || f !== ''
+      f => !f.includes('.github') && f !== ''
     )
 
     if (filteredChangedFolder.length === 0) return ''
