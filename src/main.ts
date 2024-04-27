@@ -26,11 +26,12 @@ export async function run(
     )
 
     if (filteredChangedFolder.length === 0) return ''
+    const workingDirectory = filteredChangedFolder[0].split('/main.tf')[0]
     const fileContent: string = ` 
       terraform {
         backend "s3" {
           bucket  = "${organization}-${environment}-tf-remote-state"
-          key     = "${filteredChangedFolder[0]}"
+          key     = "${workingDirectory}"
           region  = "us-east-1"
           profile = "default"
         }
@@ -44,7 +45,7 @@ export async function run(
             tags = {
               ManagedBy    = "terraform"
               Environment  = "${environment}"
-              Dir          = "${filteredChangedFolder[0]}"
+              Dir          = "${workingDirectory}"
             }
           }
       }`
@@ -52,7 +53,7 @@ export async function run(
     console.log('generated file', fileContent)
 
     await writeFileAsync('config.tf', fileContent)
-    return filteredChangedFolder[0]
+    return workingDirectory
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) console.log('error', error)

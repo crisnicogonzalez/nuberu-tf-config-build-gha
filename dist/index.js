@@ -25002,11 +25002,12 @@ async function run(mode, organization, environment) {
         const filteredChangedFolder = folderChanges.filter(f => !f.includes('.github') && f !== '');
         if (filteredChangedFolder.length === 0)
             return '';
+        const workingDirectory = filteredChangedFolder[0].split('/main.tf')[0];
         const fileContent = ` 
       terraform {
         backend "s3" {
           bucket  = "${organization}-${environment}-tf-remote-state"
-          key     = "${filteredChangedFolder[0]}"
+          key     = "${workingDirectory}"
           region  = "us-east-1"
           profile = "default"
         }
@@ -25020,13 +25021,13 @@ async function run(mode, organization, environment) {
             tags = {
               ManagedBy    = "terraform"
               Environment  = "${environment}"
-              Dir          = "${filteredChangedFolder[0]}"
+              Dir          = "${workingDirectory}"
             }
           }
       }`;
         console.log('generated file', fileContent);
         await writeFileAsync('config.tf', fileContent);
-        return filteredChangedFolder[0];
+        return workingDirectory;
     }
     catch (error) {
         // Fail the workflow run if an error occurs
