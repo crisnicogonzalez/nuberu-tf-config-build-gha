@@ -24999,7 +24999,7 @@ async function run(mode, organization, environment) {
         const diff = await execPromise(gitCommand);
         const folderChanges = diff.split('\n');
         console.log('folder changes', folderChanges);
-        const filteredChangedFolder = folderChanges.filter(f => !f.includes('.github') || f !== '');
+        const filteredChangedFolder = folderChanges.filter(f => !f.includes('.github') && f !== '');
         if (filteredChangedFolder.length === 0)
             return '';
         const fileContent = ` 
