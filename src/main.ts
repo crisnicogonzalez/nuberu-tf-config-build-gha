@@ -52,7 +52,7 @@ export async function run(
 
     console.log('generated file', fileContent)
 
-    await writeFileAsync('config.tf', fileContent)
+    await writeFileAsync(`./${workingDirectory}/config.tf`, fileContent)
     return workingDirectory
   } catch (error) {
     // Fail the workflow run if an error occurs
