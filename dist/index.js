@@ -25026,7 +25026,7 @@ async function run(mode, organization, environment) {
           }
       }`;
         console.log('generated file', fileContent);
-        await writeFileAsync('config.tf', fileContent);
+        await writeFileAsync(`./${workingDirectory}/config.tf`, fileContent);
         return workingDirectory;
     }
     catch (error) {
